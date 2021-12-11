@@ -1,3 +1,4 @@
+// SIMPLE GAME OF LIFE RENDITION IN C
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -44,7 +45,7 @@ void printBoard(char **board, int sizeOfBoard){
 int main(){
 	char **board = calloc(12,sizeof(char*));
 	for(int i = 0; i < 12; i++)
-		board[i] = calloc(12,sizeof(char));
+		board[i] = calloc(12,sizeof(char)); // actual width is 10, but there are 1 element wide margins so we can reliably look around a point on the matrix
 	char image[12][12] = /*IGNORE OUTER EDGES, THEY DO NOT CONTAIN VALUE*/ {\
 		{0,0,0,0,0,0,0,0,0,0,0,0},\
 		{0,0,0,0,0,0,0,0,0,0,0,0},\
