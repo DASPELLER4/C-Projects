@@ -1,3 +1,4 @@
+//C CODE TO GENERATE AND RENDER A PRIME FACTOR TREE, THE RENDERING SUCKS BUT IS WORKABLE
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -95,11 +96,11 @@ int main(){
 	/*for(int i = 1; i < 999999; i++){
 		printf("\n------------------------------------------------------\n%d\n------------------------------------------------------\n",i);
 		printTree(treeGen(i));
-	}*/ // iterate and print
+	}*/ // iterate and print // all that is commented here is a different mode, this one is to generate many trees
 	/*clock_t begin = clock();
 	for(int i = 1; i < 99999999; i++)
 		treeGen(i);
 	clock_t end = clock();
 	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-	printf("Time took: %fs", time_spent);*/
+	printf("Time took: %fs", time_spent);*/ // all that is commented here is a different mode, this one is to see the efficiency
 }
