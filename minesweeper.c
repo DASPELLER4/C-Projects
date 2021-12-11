@@ -1,3 +1,4 @@
+// SIMPLE MINESWEEPER GAME IN C
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -31,14 +32,6 @@ board_t* genBoard(int size, int seed, int mines){
 	board->latestReveal = calloc(2,sizeof(int));
 	for (int i = 0; i < size+2; i++)
 		board->cells[i] = (cell_t *)calloc(size+2,sizeof(cell_t));
-	/*for (int y = 0; y < size+2; y++){				// valgrind gets pissy if i dont initialize the vars
-		for (int x = 0; x < size+2; x++){
-			currCell.bomb = 0;
-			currCell.surrounding = 0;
-			currCell.hidden = 1;
-			currCell.marked = 0;
-		}
-	}*/
 	int minePos[board->mineContent][2];
 	for (int i = 0; i < board->mineContent; i++){
 		int incorrect = 1;
