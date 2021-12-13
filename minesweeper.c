@@ -78,7 +78,7 @@ void printBoard(board_t board){
 			if(board.cells[y][x].marked){
 				printf("\e[0;101m*\e[0m ");
 			}
-			else if(x==board.latestReveal[0] && y==board.latestReveal[1] && !board.cells[y][x].shown){
+			else if(x==board.latestReveal[0] && y==board.latestReveal[1] && board.cells[y][x].shown){
 				printf("%s%d\e[0m ", "\e[1;93m", board.cells[y][x].surrounding);
 			}
 			else{
