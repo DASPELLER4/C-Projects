@@ -92,6 +92,7 @@ void readAndAdd(char *fileName, Screen *screen){ // read from a file polygon dat
 		exit(1);
 	}
 	while (fscanf(fptr, "%s", contents) != EOF) { // welcome to hell
+		cache[0] = '\0'; cache[1] = '\0'; cache[2] = '\0'; cache[3] = '\0'; cache[4] = '\0'; cache[5] = '\0'; cache[6] = '\0'; cache[7] = '\0'; cache[8] = '\0'; cache[9] = '\0';
 		if (contents[0] == 'x'){ // x here means the width of the terminal
 			switch(contents[1]){
 				case('/'):{
