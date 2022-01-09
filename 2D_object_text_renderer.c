@@ -2,6 +2,7 @@
  * Simple 2D polygon (3 vertex) renderer in text for use in terminals
  * Uses files with syntax :
  * 	v1x v1y v2x v2y v3x v3y colour
+ *	e.g: 0 0 0 x x y %
  * where colour is a single character to represent the brightness and vnx and vny refers to the coordinate of the n-vertex
  * I am aware my programming is bad, but it works.
  * I am using pnpoly because the Barycentric weights method (no idea what it's called) was pretty cool but it took so long to type out
