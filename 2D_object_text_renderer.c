@@ -2,12 +2,18 @@
  * Simple 2D polygon (3 vertex) renderer in text for use in terminals
  * Uses files with syntax :
  * 	v1x v1y v2x v2y v3x v3y colour
- *	e.g: 0 0 0 x x y %
  * where colour is a single character to represent the brightness and vnx and vny refers to the coordinate of the n-vertex
  * I am aware my programming is bad, but it works.
  * I am using pnpoly because the Barycentric weights method (no idea what it's called) was pretty cool but it took so long to type out
  * 	I got bored and Ctrl+C and Ctrl+v'd the pnpoly code and called it a day
+ * PYTHON REQUIRED, lol
 */
+
+#ifdef __unix__
+	#define OS_Windows 0
+#elif defined(_WIN32) || defined(WIN32)
+	#define OS_Windows 1
+#endif
 
 #include <sys/ioctl.h>
 #include <stdio.h>
@@ -39,6 +45,24 @@ typedef struct{
 	Poly *Polygons;
 	int PolyCount;
 } Screen;
+
+char* itoa(int num){
+	char *areturnval = (char *) malloc(17);
+	char *returnval = (char *) malloc(17);
+	int i = 0;
+	while (num != 0){
+		int rem = num % 10;
+		areturnval[i++] = (rem > 9)? (rem-10) + 'a' : rem + '0';
+		num = num/10;
+	}
+	areturnval[i] = 0;
+	returnval[i] = 0;
+	for(int j = 0; --i > -1;j++){
+		returnval[j] = areturnval[i];
+	}
+	free(areturnval);
+	return returnval;
+}
 
 int pnpoly(Poly poly, Vector2 point){ // Quite a popular algorithm, modified some of the variables for my purposes, uses ints so some accuracy is lost
 	int i, j, c = 0;
@@ -94,68 +118,126 @@ void readAndAdd(char *fileName, Screen *screen){ // read from a file polygon dat
 	while (fscanf(fptr, "%s", contents) != EOF) { // welcome to hell
 		cache[0] = '\0'; cache[1] = '\0'; cache[2] = '\0'; cache[3] = '\0'; cache[4] = '\0'; cache[5] = '\0'; cache[6] = '\0'; cache[7] = '\0'; cache[8] = '\0'; cache[9] = '\0';
 		if (contents[0] == 'x'){ // x here means the width of the terminal
-			switch(contents[1]){
-				case('/'):{
-					int i = 2;
-					while(contents[i] != '\n' && contents[i] != '\0'){ // find what the value after the operator is
-						cache[i-2] = contents[i];
-						i++;
-					}
-					cache[i-1] = '\0'; // terminate the string
-					tempCoord[currentVector[1]][currentVector[0]] = screen->w/atoi(cache); // apply the operator
+			if (contents[1]){
+				if(!OS_Windows){
+					char* screenw = itoa(screen->w);
+					char command[strlen(contents) + strlen(screenw) + 50];
+					int i;
+					for (i = 0; "python -c 'print(int("[i]; i++)
+				        	command[i] = "python -c 'print(int("[i];
+					int j = i;
+					for (; screenw[i-j]; i++)
+						command[i] = screenw[i-j];
+					j = i;
+					for (; contents[i-j+1]; i++)
+					        command[i] = contents[i-j+1];
+					j = i;
+					for (; "))' > sus"[i-j]; i++)
+					        command[i] = "))' > sus"[i-j];
+					command[i]=0;
+					system(command);
+					FILE *filee;
+					filee = fopen("sus","r");
+					int coontent;
+					fscanf(filee, "%d", &coontent);
+					fclose(filee);
+					system("rm sus");
+					free(screenw);
+					tempCoord[currentVector[1]][currentVector[0]] = coontent;
 					currentVector[0]++;
-					break;
-				}
-                                case('-'):{
-                                        int i = 2;
-                                        while(contents[i] != '\n' && contents[i] != '\0'){ // find what the value after the operator is
-                                                cache[i-2] = contents[i];
-                                                i++;
-                                        }
-                                        cache[i-1] = '\0'; // terminate the string
-                                        tempCoord[currentVector[1]][currentVector[0]] = screen->w-atoi(cache); // apply the operator
+				} else {
+                                        char* screenw = itoa(screen->w);
+                                        char command[strlen(contents) + strlen(screenw) + 50];
+                                        int i;
+                                        for (i = 0; "python -c 'print(int("[i]; i++)
+                                                command[i] = "python -c 'print(int("[i];
+                                        int j = i;
+                                        for (; screenw[i-j]; i++)
+                                                command[i] = screenw[i-j];
+                                        j = i;
+                                        for (; contents[i-j+1]; i++)
+                                                command[i] = contents[i-j+1];
+                                        j = i;
+                                        for (; "))' > sus"[i-j]; i++)
+                                                command[i] = "))' > sus"[i-j];
+                                        command[i]=0;
+                                        system(command);
+                                        FILE *filee;
+                                        filee = fopen("sus","r");
+                                        int coontent;
+                                        fscanf(filee, "%d", &coontent);
+                                        fclose(filee);
+                                        system("del sus");
+                                        free(screenw);
+                                        tempCoord[currentVector[1]][currentVector[0]] = coontent;
                                         currentVector[0]++;
-                                        break;
-                                }
-				default: // the user just wants to use the width alone
-					tempCoord[currentVector[1]][currentVector[0]] = screen->w;
-					currentVector[0]++;
-					break;
-				// note i dont have + or * operator, this is because you cant go above the width and multiplying by a decimal doesn't work as i only handle integers
+				}
+			} else {
+				tempCoord[currentVector[1]][currentVector[0]] = screen->w;
+				currentVector[0]++;
 			}
 		} else if (contents[0] == 'y'){ // same as x but for height
-                        switch(contents[1]){
-                                case('/'):{
-                                        int i = 2;
-                                        while(contents[i] != '\n' && contents[i] != '\0'){ // find what the value after the operator is
-                                                cache[i-2] = contents[i];
-                                                i++;
-                                        }
-                                        cache[i-1] = '\0'; // terminate the string
-                                        tempCoord[currentVector[1]][currentVector[0]] = screen->h/atoi(cache); // apply the operator
+                        if (contents[1]){
+				if(!OS_Windows){
+        	                        char* screenh = itoa(screen->h);
+	                                char command[strlen(contents) + strlen(screenh) + 50];
+                                	int i;
+                        	        for (i = 0; "python -c 'print(int("[i]; i++)
+                	                        command[i] = "python -c 'print(int("[i];
+        	                        int j = i;
+	                                for (; screenh[i-j]; i++)
+                                        	command[i] = screenh[i-j];
+                                	j = i;
+                        	        for (; contents[i-j+1]; i++)
+                	                        command[i] = contents[i-j+1];
+        	                        j = i;
+	                                for (; "))' > sus"[i-j]; i++)
+                                        	command[i] = "))' > sus"[i-j];
+                                	command[i]=0;
+                        	        system(command);
+                	                FILE *filee;
+        	                        filee = fopen("sus","r");
+	                                int coontent;
+                                	fscanf(filee, "%d", &coontent);
+                        	        fclose(filee);
+                	                system("rm sus");
+        	                        free(screenh);
+	                                tempCoord[currentVector[1]][currentVector[0]] = coontent;
+                                	currentVector[0]++;
+				} else {
+                                        char* screenh = itoa(screen->h);
+                                        char command[strlen(contents) + strlen(screenh) + 50];
+                                        int i;
+                                        for (i = 0; "python -c 'print(int("[i]; i++)
+                                                command[i] = "python -c 'print(int("[i];
+                                        int j = i;
+                                        for (; screenh[i-j]; i++)
+                                                command[i] = screenh[i-j];
+                                        j = i;
+                                        for (; contents[i-j+1]; i++)
+                                                command[i] = contents[i-j+1];
+                                        j = i;
+                                        for (; "))' > sus"[i-j]; i++)
+                                                command[i] = "))' > sus"[i-j];
+                                        command[i]=0;
+                                        system(command);
+                                        FILE *filee;
+                                        filee = fopen("sus","r");
+                                        int coontent;
+                                        fscanf(filee, "%d", &coontent);
+                                        fclose(filee);
+                                        system("del sus");
+                                        free(screenh);
+                                        tempCoord[currentVector[1]][currentVector[0]] = coontent;
                                         currentVector[0]++;
-                                        break;
-                                }
-                                case('-'):{
-                                        int i = 2;
-                                        while(contents[i] != '\n' && contents[i] != '\0'){ // find what the value after the operator is
-                                                cache[i-2] = contents[i];
-                                                i++;
-                                        }
-                                        cache[i-1] = '\0'; // terminate the string
-                                        tempCoord[currentVector[1]][currentVector[0]] = screen->h-atoi(cache); // apply the operator
-                                        currentVector[0]++;
-                                        break;
-                                }
-                                default: // the user just wants to use the height alone
-                                        tempCoord[currentVector[1]][currentVector[0]] = screen->h;
-                                        currentVector[0]++;
-                                        break;
-				// note i dont have + or * operator, this is because you cant go above the height and multiplying by a decimal doesn't work as i only handle integers
+				}
+                        } else {
+                                tempCoord[currentVector[1]][currentVector[0]] = screen->h;
+                                currentVector[0]++;
                         }
 		} else if (contents[0] > '9' || contents[0] < '0'){ // this means that the character is a "colour character" so it has reached the end of the polygon
 			color = contents[0];
-			// printf("(%d,%d) (%d,%d) (%d,%d) > %c\n", tempCoord[0][0], tempCoord[0][1], tempCoord[1][0], tempCoord[1][1], tempCoord[2][0], tempCoord[2][1], color);
+			printf("(%d,%d) (%d,%d) (%d,%d) > %c\n", tempCoord[0][0], tempCoord[0][1], tempCoord[1][0], tempCoord[1][1], tempCoord[2][0], tempCoord[2][1], color);
 			appendPolygon((Poly) {{{tempCoord[0][0], tempCoord[0][1]},{tempCoord[1][0], tempCoord[1][1]},{tempCoord[2][0], tempCoord[2][1]}},color}, screen);
 			currentVector[0] = 0; // reset the position where the polygon data is written to
 			currentVector[1] = 0;
