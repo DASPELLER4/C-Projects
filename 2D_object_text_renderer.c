@@ -9,12 +9,6 @@
  * PYTHON REQUIRED, lol
 */
 
-#ifdef __unix__
-	#define OS_Windows 0
-#elif defined(_WIN32) || defined(WIN32)
-	#define OS_Windows 1
-#endif
-
 #include <sys/ioctl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -119,118 +113,62 @@ void readAndAdd(char *fileName, Screen *screen){ // read from a file polygon dat
 		cache[0] = '\0'; cache[1] = '\0'; cache[2] = '\0'; cache[3] = '\0'; cache[4] = '\0'; cache[5] = '\0'; cache[6] = '\0'; cache[7] = '\0'; cache[8] = '\0'; cache[9] = '\0';
 		if (contents[0] == 'x'){ // x here means the width of the terminal
 			if (contents[1]){
-				if(!OS_Windows){
-					char* screenw = itoa(screen->w);
-					char command[strlen(contents) + strlen(screenw) + 50];
-					int i;
-					for (i = 0; "python -c 'print(int("[i]; i++)
-				        	command[i] = "python -c 'print(int("[i];
-					int j = i;
-					for (; screenw[i-j]; i++)
-						command[i] = screenw[i-j];
-					j = i;
-					for (; contents[i-j+1]; i++)
-					        command[i] = contents[i-j+1];
-					j = i;
-					for (; "))' > sus"[i-j]; i++)
-					        command[i] = "))' > sus"[i-j];
-					command[i]=0;
-					system(command);
-					FILE *filee;
-					filee = fopen("sus","r");
-					int coontent;
-					fscanf(filee, "%d", &coontent);
-					fclose(filee);
-					system("rm sus");
-					free(screenw);
-					tempCoord[currentVector[1]][currentVector[0]] = coontent;
-					currentVector[0]++;
-				} else {
-                                        char* screenw = itoa(screen->w);
-                                        char command[strlen(contents) + strlen(screenw) + 50];
-                                        int i;
-                                        for (i = 0; "python -c 'print(int("[i]; i++)
-                                                command[i] = "python -c 'print(int("[i];
-                                        int j = i;
-                                        for (; screenw[i-j]; i++)
-                                                command[i] = screenw[i-j];
-                                        j = i;
-                                        for (; contents[i-j+1]; i++)
-                                                command[i] = contents[i-j+1];
-                                        j = i;
-                                        for (; "))' > sus"[i-j]; i++)
-                                                command[i] = "))' > sus"[i-j];
-                                        command[i]=0;
-                                        system(command);
-                                        FILE *filee;
-                                        filee = fopen("sus","r");
-                                        int coontent;
-                                        fscanf(filee, "%d", &coontent);
-                                        fclose(filee);
-                                        system("del sus");
-                                        free(screenw);
-                                        tempCoord[currentVector[1]][currentVector[0]] = coontent;
-                                        currentVector[0]++;
-				}
+				char* screenw = itoa(screen->w);
+				char command[strlen(contents) + strlen(screenw) + 50];
+				int i;
+				for (i = 0; "python -c 'print(int("[i]; i++)
+			        	command[i] = "python -c 'print(int("[i];
+				int j = i;
+				for (; screenw[i-j]; i++)
+					command[i] = screenw[i-j];
+				j = i;
+				for (; contents[i-j+1]; i++)
+				        command[i] = contents[i-j+1];
+				j = i;
+				for (; "))' > sus"[i-j]; i++)
+				        command[i] = "))' > sus"[i-j];
+				command[i]=0;
+				system(command);
+				FILE *filee;
+				filee = fopen("sus","r");
+				int coontent;
+				fscanf(filee, "%d", &coontent);
+				fclose(filee);
+				remove("sus");
+				free(screenw);
+				tempCoord[currentVector[1]][currentVector[0]] = coontent;
+				currentVector[0]++;
 			} else {
 				tempCoord[currentVector[1]][currentVector[0]] = screen->w;
 				currentVector[0]++;
 			}
 		} else if (contents[0] == 'y'){ // same as x but for height
-                        if (contents[1]){
-				if(!OS_Windows){
-        	                        char* screenh = itoa(screen->h);
-	                                char command[strlen(contents) + strlen(screenh) + 50];
-                                	int i;
-                        	        for (i = 0; "python -c 'print(int("[i]; i++)
-                	                        command[i] = "python -c 'print(int("[i];
-        	                        int j = i;
-	                                for (; screenh[i-j]; i++)
-                                        	command[i] = screenh[i-j];
-                                	j = i;
-                        	        for (; contents[i-j+1]; i++)
-                	                        command[i] = contents[i-j+1];
-        	                        j = i;
-	                                for (; "))' > sus"[i-j]; i++)
-                                        	command[i] = "))' > sus"[i-j];
-                                	command[i]=0;
-                        	        system(command);
-                	                FILE *filee;
-        	                        filee = fopen("sus","r");
-	                                int coontent;
-                                	fscanf(filee, "%d", &coontent);
-                        	        fclose(filee);
-                	                system("rm sus");
-        	                        free(screenh);
-	                                tempCoord[currentVector[1]][currentVector[0]] = coontent;
-                                	currentVector[0]++;
-				} else {
-                                        char* screenh = itoa(screen->h);
-                                        char command[strlen(contents) + strlen(screenh) + 50];
-                                        int i;
-                                        for (i = 0; "python -c 'print(int("[i]; i++)
-                                                command[i] = "python -c 'print(int("[i];
-                                        int j = i;
-                                        for (; screenh[i-j]; i++)
-                                                command[i] = screenh[i-j];
-                                        j = i;
-                                        for (; contents[i-j+1]; i++)
-                                                command[i] = contents[i-j+1];
-                                        j = i;
-                                        for (; "))' > sus"[i-j]; i++)
-                                                command[i] = "))' > sus"[i-j];
-                                        command[i]=0;
-                                        system(command);
-                                        FILE *filee;
-                                        filee = fopen("sus","r");
-                                        int coontent;
-                                        fscanf(filee, "%d", &coontent);
-                                        fclose(filee);
-                                        system("del sus");
-                                        free(screenh);
-                                        tempCoord[currentVector[1]][currentVector[0]] = coontent;
-                                        currentVector[0]++;
-				}
+			if (contents[1]){
+        	        	char* screenh = itoa(screen->h);
+	                        char command[strlen(contents) + strlen(screenh) + 50];
+                                int i;
+                                for (i = 0; "python -c 'print(int("[i]; i++)
+                	                command[i] = "python -c 'print(int("[i];
+        	                int j = i;
+	                        for (; screenh[i-j]; i++)
+                                        command[i] = screenh[i-j];
+                                j = i;
+                        	for (; contents[i-j+1]; i++)
+                	                command[i] = contents[i-j+1];
+        	                j = i;
+	                        for (; "))' > sus"[i-j]; i++)
+                                   	command[i] = "))' > sus"[i-j];
+                                command[i]=0;
+                        	system(command);
+                	        FILE *filee;
+        	                filee = fopen("sus","r");
+	                        int coontent;
+                                fscanf(filee, "%d", &coontent);
+                        	fclose(filee);
+                	        remove("sus");
+        	                free(screenh);
+	                        tempCoord[currentVector[1]][currentVector[0]] = coontent;
+                                currentVector[0]++;
                         } else {
                                 tempCoord[currentVector[1]][currentVector[0]] = screen->h;
                                 currentVector[0]++;
