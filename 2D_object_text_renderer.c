@@ -15,6 +15,12 @@
 #include <unistd.h>
 #include <string.h>
 
+#ifdef __unix__
+	#define OS_Windows 0
+#elif defined(_WIN32) || defined(WIN32)
+	#define OS_Windows 1
+#endif
+
 #define MAXSIZE 20
 
 typedef struct{
@@ -116,8 +122,13 @@ void readAndAdd(char *fileName, Screen *screen){ // read from a file polygon dat
 				char* screenw = itoa(screen->w);
 				char command[strlen(contents) + strlen(screenw) + 50];
 				int i;
-				for (i = 0; "python -c 'print(int("[i]; i++)
-			        	command[i] = "python -c 'print(int("[i];
+				if(OS_Windows){
+					for (i = 0; "py -c 'print(int("[i]; i++)
+			        		command[i] = "py -c 'print(int("[i];
+				} else {
+					for (i = 0; "python -c 'print(int("[i]; i++)
+					        command[i] = "python -c 'print(int("[i];
+				}
 				int j = i;
 				for (; screenw[i-j]; i++)
 					command[i] = screenw[i-j];
@@ -147,8 +158,13 @@ void readAndAdd(char *fileName, Screen *screen){ // read from a file polygon dat
         	        	char* screenh = itoa(screen->h);
 	                        char command[strlen(contents) + strlen(screenh) + 50];
                                 int i;
-                                for (i = 0; "python -c 'print(int("[i]; i++)
-                	                command[i] = "python -c 'print(int("[i];
+				if(OS_Windows){
+                                        for (i = 0; "py -c 'print(int("[i]; i++)
+                                                command[i] = "py -c 'print(int("[i];
+                                } else {
+                                        for (i = 0; "python -c 'print(int("[i]; i++)
+                                                command[i] = "python -c 'print(int("[i];
+                                }
         	                int j = i;
 	                        for (; screenh[i-j]; i++)
                                         command[i] = screenh[i-j];
