@@ -188,7 +188,7 @@ void readAndAdd(char *fileName, Screen *screen){ // read from a file polygon dat
 				for(int j = i; contents[i-j+1]; i++){
 					expression[i-j+strlen(screenh)] = contents[i-j+1];
 				}
-				expression[i-j+1] = 0;
+				expression[i-j] = 0;
 				free(screenh);
 				tempCoord[currentVector[1]][currentVector[0]] = eval(expression);
 				currentVector[0]++;
