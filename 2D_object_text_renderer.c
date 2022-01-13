@@ -6,9 +6,9 @@
  * I am aware my programming is bad, but it works.
  * I am using pnpoly because the Barycentric weights method (no idea what it's called) was pretty cool but it took so long to type out
  * 	I got bored and Ctrl+C and Ctrl+v'd the pnpoly code and called it a day
+ * Also I added my own function to evaluate the expression like x+4/3, however this is solved as (x+4)/3, so it doesn't follow BEDMAS
 */
 
-#include <sys/ioctl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -17,8 +17,10 @@
 
 #ifdef __unix__
 	#define OS_Windows 0
+	#include <sys/ioctl.h>
 #elif defined(_WIN32) || defined(WIN32)
 	#define OS_Windows 1
+	#include <windows.h>
 #endif
 
 #define MAXSIZE 20
@@ -47,45 +49,45 @@ typedef struct{
 } Screen;
 
 int eval(char *expr){
-    int sum = 0;
-    char numOne[10], numTwo[10];
-    int i, j;
-    char operator;
-    for (i = j = 0; expr[i]>='0' && expr[i]<='9'; i++){
-        numOne[i-j] = expr[i];
-    }
-    numOne[i] = 0;
-    sum = atoi(numOne);
+	int sum = 0;
+	char numOne[10], numTwo[10];
+	int i, j;
+	char operator;
+	for (i = j = 0; expr[i]>='0' && expr[i]<='9'; i++){
+		numOne[i-j] = expr[i];
+	}
+	numOne[i] = 0;
+	sum = atoi(numOne);
     for (j = i; i < strlen(expr);){
         operator = expr[i++];
-        for (j = i; expr[i]>='0' && expr[i]<='9'; i++){
-            numTwo[i-j] = expr[i];
-        }
-        numTwo[i-j] = 0;
-        switch(operator){
-            case '/':
-                sum /= atoi(numTwo);
-                break;
-            case '+':
-                sum += atoi(numTwo);
-                break;
-            case '-':
-                sum -= atoi(numTwo);
-                break;
-            case '*':
-                sum *= atoi(numTwo);
-                break;
-            default:
-                errno = 1;
-                perror("Unrecognized character");
-                abort();
-                break;
-        }
+    for (j = i; expr[i]>='0' && expr[i]<='9'; i++){
+        numTwo[i-j] = expr[i];
     }
+    numTwo[i-j] = 0;
+    switch(operator){
+        case '/':
+            sum /= atoi(numTwo);
+            break;
+        case '+':
+            sum += atoi(numTwo);
+            break;
+        case '-':
+            sum -= atoi(numTwo);
+            break;
+        case '*':
+            sum *= atoi(numTwo);
+            break;
+        default:
+            errno = 1;
+            perror("Unrecognized character");
+            abort();
+            break;
+        }
+	}
     return sum;
 }
 
-char* itoa(int num){
+char* itoa0(int num){
 	char *areturnval = (char *) malloc(17);
 	char *returnval = (char *) malloc(17);
 	int i = 0;
@@ -107,19 +109,29 @@ int pnpoly(Poly poly, Vector2 point){ // Quite a popular algorithm, modified som
 	int i, j, c = 0;
 	for(i = 0, j = 2; i < 3; j = i++)
 		if (((poly.Coords[i].b>point.b) != (poly.Coords[j].b>point.b)) && (point.a < (poly.Coords[j].a-poly.Coords[i].a) * (point.b-poly.Coords[i].b) / (poly.Coords[j].b-poly.Coords[i].b) + poly.Coords[i].a))
-       			c = !c;
+            c = !c;
 	return c;
 }
 
 Screen initScreen(){ // Defines all of the Screen attributes
+    #ifdef __unix__
 	struct winsize w;
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 	Screen returnVal = {w.ws_col,w.ws_row,NULL,0};
 	return returnVal;
+	#else
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+    int columns, rows;
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    columns = csbi.srWindow.Right - csbi.srWindow.Left;
+    rows = csbi.srWindow.Bottom - csbi.srWindow.Top;
+    Screen returnVal = {columns,rows,NULL,0};
+	return returnVal;
+	#endif
 }
 
 void appendPolygon(Poly poly, Screen *screen){ // Increases the memory allocated to the polygons by 1 sizeof(Poly) and sets the new last memory to the new poly
-	screen->PolyCount++;		       // Praise be for structs being able to copy between each other	
+	screen->PolyCount++;		       // Praise be for structs being able to copy between each other
 	screen->Polygons = (Poly *) realloc(screen->Polygons, sizeof(Poly)*screen->PolyCount);
 	screen->Polygons[screen->PolyCount-1] = poly;
 }
@@ -127,10 +139,12 @@ void appendPolygon(Poly poly, Screen *screen){ // Increases the memory allocated
 char **createRender(Screen screen){ // Generate the 2d Character Array from the polygons to text
 	char **out = (char**) malloc(screen.h * sizeof(char*)); // Initialize the memory for this new 2d array (didn't use arrays because I want to use it later and it wouldn't point)
 	for(int i = 0; i < screen.h; i++)
-		out[i] = (char*) malloc(screen.w);
-	for(int i = 0; i < screen.h; i++) // Now initialize all the values to a space
+		out[i] = (char*) malloc(screen.w+1);
+	for(int i = 0; i < screen.h; i++){ // Now initialize all the values to a space
 		for(int j = 0; j < screen.w; j++)
 			out[i][j] = ' ';
+        out[i][screen.w] = 0;
+	}
 	for(int i = 0; i < screen.PolyCount; i++) // iterate through all polygons
 		for(int outY = screen.h-1, y = 0; y < screen.h; outY--, y++ ) // iterate through all pixels
 			for(int x = 0; x < screen.w; x++)
@@ -145,8 +159,7 @@ void render(Screen screen, char** text){
 }
 
 void readAndAdd(char *fileName, Screen *screen){ // read from a file polygon data
-	char cache[10], contents[MAXSIZE], color;
-	int currentCache = 0;
+	char contents[MAXSIZE], color;
 	int currentVector[] = {0,0};
 	int tempCoord[3][2] = {{0,0},{0,0},{0,0}};
 	FILE *fptr;
@@ -155,10 +168,9 @@ void readAndAdd(char *fileName, Screen *screen){ // read from a file polygon dat
 		exit(1);
 	}
 	while (fscanf(fptr, "%s", contents) != EOF) { // welcome to hell
-		cache[0] = '\0'; cache[1] = '\0'; cache[2] = '\0'; cache[3] = '\0'; cache[4] = '\0'; cache[5] = '\0'; cache[6] = '\0'; cache[7] = '\0'; cache[8] = '\0'; cache[9] = '\0';
 		if (contents[0] == 'x'){ // x here means the width of the terminal
 			if (contents[1]){
-				char* screenw = itoa(screen->w);
+				char* screenw = itoa0(screen->w);
 				char expression[strlen(contents) + strlen(screenw) + 5];
 				int i = 0;
 				int j = 0;
@@ -178,7 +190,7 @@ void readAndAdd(char *fileName, Screen *screen){ // read from a file polygon dat
 			}
 		} else if (contents[0] == 'y'){ // same as x but for height
 			if (contents[1]){
-				char* screenh = itoa(screen->h);
+				char* screenh = itoa0(screen->h);
 				char expression[strlen(contents) + strlen(screenh) + 5];
 				int i = 0;
 				int j = 0;
@@ -192,13 +204,13 @@ void readAndAdd(char *fileName, Screen *screen){ // read from a file polygon dat
 				free(screenh);
 				tempCoord[currentVector[1]][currentVector[0]] = eval(expression);
 				currentVector[0]++;
-                        } else {
-                                tempCoord[currentVector[1]][currentVector[0]] = screen->h;
-                                currentVector[0]++;
-                        }
+                    } else {
+                        tempCoord[currentVector[1]][currentVector[0]] = screen->h;
+                        currentVector[0]++;
+                    }
 		} else if (contents[0] > '9' || contents[0] < '0'){ // this means that the character is a "colour character" so it has reached the end of the polygon
 			color = contents[0];
-			printf("(%d,%d) (%d,%d) (%d,%d) > %c\n", tempCoord[0][0], tempCoord[0][1], tempCoord[1][0], tempCoord[1][1], tempCoord[2][0], tempCoord[2][1], color);
+			//printf("(%d,%d) (%d,%d) (%d,%d) > %c\n", tempCoord[0][0], tempCoord[0][1], tempCoord[1][0], tempCoord[1][1], tempCoord[2][0], tempCoord[2][1], color);
 			appendPolygon((Poly) {{{tempCoord[0][0], tempCoord[0][1]},{tempCoord[1][0], tempCoord[1][1]},{tempCoord[2][0], tempCoord[2][1]}},color}, screen);
 			currentVector[0] = 0; // reset the position where the polygon data is written to
 			currentVector[1] = 0;
