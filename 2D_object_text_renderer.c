@@ -6,7 +6,6 @@
  * I am aware my programming is bad, but it works.
  * I am using pnpoly because the Barycentric weights method (no idea what it's called) was pretty cool but it took so long to type out
  * 	I got bored and Ctrl+C and Ctrl+v'd the pnpoly code and called it a day
- * PYTHON REQUIRED, lol
 */
 
 #include <sys/ioctl.h>
