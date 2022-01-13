@@ -7,6 +7,8 @@
  * I am using pnpoly because the Barycentric weights method (no idea what it's called) was pretty cool but it took so long to type out
  * 	I got bored and Ctrl+C and Ctrl+v'd the pnpoly code and called it a day
  * Also I added my own function to evaluate the expression like x+4/3, however this is solved as (x+4)/3, so it doesn't follow BEDMAS
+ * 	Here x refers to the screen width, which can be accessed as x in the file as a value
+ * 	same with y as screen height
 */
 
 #include <stdio.h>
