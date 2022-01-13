@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>
 
 #ifdef __unix__
 	#define OS_Windows 0
@@ -45,6 +46,45 @@ typedef struct{
 	Poly *Polygons;
 	int PolyCount;
 } Screen;
+
+int eval(char *expr){
+    int sum = 0;
+    char numOne[10], numTwo[10];
+    int i, j;
+    char operator;
+    for (i = j = 0; expr[i]>='0' && expr[i]<='9'; i++){
+        numOne[i-j] = expr[i];
+    }
+    numOne[i] = 0;
+    sum = atoi(numOne);
+    for (j = i; i < strlen(expr);){
+        operator = expr[i++];
+        for (j = i; expr[i]>='0' && expr[i]<='9'; i++){
+            numTwo[i-j] = expr[i];
+        }
+        numTwo[i-j] = 0;
+        switch(operator){
+            case '/':
+                sum /= atoi(numTwo);
+                break;
+            case '+':
+                sum += atoi(numTwo);
+                break;
+            case '-':
+                sum -= atoi(numTwo);
+                break;
+            case '*':
+                sum *= atoi(numTwo);
+                break;
+            default:
+                errno = 1;
+                perror("Unrecognized character");
+                abort();
+                break;
+        }
+    }
+    return sum;
+}
 
 char* itoa(int num){
 	char *areturnval = (char *) malloc(17);
@@ -120,34 +160,18 @@ void readAndAdd(char *fileName, Screen *screen){ // read from a file polygon dat
 		if (contents[0] == 'x'){ // x here means the width of the terminal
 			if (contents[1]){
 				char* screenw = itoa(screen->w);
-				char command[strlen(contents) + strlen(screenw) + 50];
-				int i;
-				if(OS_Windows){
-					for (i = 0; "py -c 'print(int("[i]; i++)
-			        		command[i] = "py -c 'print(int("[i];
-				} else {
-					for (i = 0; "python -c 'print(int("[i]; i++)
-					        command[i] = "python -c 'print(int("[i];
+				char expression[strlen(contents) + strlen(screenw) + 5];
+				int i = 0;
+				int j = 0;
+				for(int j = i; screenw[i]; i++){
+					expression[i-j] = screenw[i];
 				}
-				int j = i;
-				for (; screenw[i-j]; i++)
-					command[i] = screenw[i-j];
-				j = i;
-				for (; contents[i-j+1]; i++)
-				        command[i] = contents[i-j+1];
-				j = i;
-				for (; "))' > sus"[i-j]; i++)
-				        command[i] = "))' > sus"[i-j];
-				command[i]=0;
-				system(command);
-				FILE *filee;
-				filee = fopen("sus","r");
-				int coontent;
-				fscanf(filee, "%d", &coontent);
-				fclose(filee);
-				remove("sus");
+				for(int j = i; contents[i-j+1]; i++){
+					expression[i-j+strlen(screenw)] = contents[i-j+1];
+				}
+				expression[i-j] = 0;
 				free(screenw);
-				tempCoord[currentVector[1]][currentVector[0]] = coontent;
+				tempCoord[currentVector[1]][currentVector[0]] = eval(expression);
 				currentVector[0]++;
 			} else {
 				tempCoord[currentVector[1]][currentVector[0]] = screen->w;
@@ -155,36 +179,20 @@ void readAndAdd(char *fileName, Screen *screen){ // read from a file polygon dat
 			}
 		} else if (contents[0] == 'y'){ // same as x but for height
 			if (contents[1]){
-        	        	char* screenh = itoa(screen->h);
-	                        char command[strlen(contents) + strlen(screenh) + 50];
-                                int i;
-				if(OS_Windows){
-                                        for (i = 0; "py -c 'print(int("[i]; i++)
-                                                command[i] = "py -c 'print(int("[i];
-                                } else {
-                                        for (i = 0; "python -c 'print(int("[i]; i++)
-                                                command[i] = "python -c 'print(int("[i];
-                                }
-        	                int j = i;
-	                        for (; screenh[i-j]; i++)
-                                        command[i] = screenh[i-j];
-                                j = i;
-                        	for (; contents[i-j+1]; i++)
-                	                command[i] = contents[i-j+1];
-        	                j = i;
-	                        for (; "))' > sus"[i-j]; i++)
-                                   	command[i] = "))' > sus"[i-j];
-                                command[i]=0;
-                        	system(command);
-                	        FILE *filee;
-        	                filee = fopen("sus","r");
-	                        int coontent;
-                                fscanf(filee, "%d", &coontent);
-                        	fclose(filee);
-                	        remove("sus");
-        	                free(screenh);
-	                        tempCoord[currentVector[1]][currentVector[0]] = coontent;
-                                currentVector[0]++;
+				char* screenh = itoa(screen->h);
+				char expression[strlen(contents) + strlen(screenh) + 5];
+				int i = 0;
+				int j = 0;
+				for(int j = i; screenh[i]; i++){
+					expression[i-j] = screenh[i];
+				}
+				for(int j = i; contents[i-j+1]; i++){
+					expression[i-j+strlen(screenh)] = contents[i-j+1];
+				}
+				expression[i-j+1] = 0;
+				free(screenh);
+				tempCoord[currentVector[1]][currentVector[0]] = eval(expression);
+				currentVector[0]++;
                         } else {
                                 tempCoord[currentVector[1]][currentVector[0]] = screen->h;
                                 currentVector[0]++;
