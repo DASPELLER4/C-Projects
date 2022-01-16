@@ -140,9 +140,8 @@ void appendPolygon(Poly poly, Screen *screen){ // Increases the memory allocated
 
 char **createRender(Screen screen){ // Generate the 2d Character Array from the polygons to text
 	char **out = (char**) malloc(screen.h * sizeof(char*)); // Initialize the memory for this new 2d array (didn't use arrays because I want to use it later and it wouldn't point)
-	for(int i = 0; i < screen.h; i++)
-		out[i] = (char*) malloc(screen.w+1);
 	for(int i = 0; i < screen.h; i++){ // Now initialize all the values to a space
+		out[i] = (char*) malloc(screen.w+1);
 		for(int j = 0; j < screen.w; j++)
 			out[i][j] = ' ';
         out[i][screen.w] = 0;
