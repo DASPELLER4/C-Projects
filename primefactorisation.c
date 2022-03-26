@@ -9,8 +9,8 @@ typedef struct tree_node{
 	struct tree_node* next;
 } node_t;
 
-int isPrime(long long num){
-	for(long long i = 2; i < num-1; i++){
+int isPrime(long num){
+	for(long i = 2; i < num-1; i++){
 		if (i != num){
 			if(num%i == 0)
 				return 0;
@@ -19,8 +19,8 @@ int isPrime(long long num){
 	return 1;
 }
 
-node_t* primeGen(long long num){
-	for(long long i = 2; i < num-1; i++){
+node_t* primeGen(long num){
+	for(long i = 2; i < (num-1/2); i++){
 		if(isPrime(i)){
 			if(num%i == 0){
 				node_t* out = calloc(1,sizeof(node_t));
@@ -33,7 +33,7 @@ node_t* primeGen(long long num){
 	}
 }
 
-node_t* treeGen(long long num){
+node_t* treeGen(long num){
 	if(isPrime(num)){
 		node_t* out = calloc(1,sizeof(node_t));
 		out->left = num;
@@ -42,10 +42,9 @@ node_t* treeGen(long long num){
 		return out;
 	}
 	else{
-		node_t* lastNode = calloc(1,sizeof(node_t));
 		node_t* tree = calloc(1,sizeof(node_t));
 		size_t treeSize = 1;
-		long long lastRight = primeGen(num)->right;
+		long lastRight = primeGen(num)->right;
 		tree[0].left = primeGen(num)->left;
 		tree[0].right = primeGen(num)->right;
 		tree[0].next = NULL;
@@ -57,7 +56,6 @@ node_t* treeGen(long long num){
 			tree[treeSize-2].next = &tree[treeSize-1];
 			lastRight = tree[treeSize-1].right;
 		}
-		free(lastNode);
 		return tree;
 	}
 }
@@ -82,25 +80,23 @@ void printTree(node_t* tree){
 	}
 }
 
-int main(){
-	long long input;
-	scanf("%lld", &input);
-	node_t* tree = treeGen(input); // custom input
-	printTree(tree);
-	int treeLen = 0;
-	for(; tree[treeLen].next; treeLen++);
-	for(int i = 0; i<=treeLen; i++){
-		free(tree[i].next);
+void freeList(node_t* head){
+	node_t* tmp;
+	while (head != NULL){
+		tmp = head;
+		head = tmp->next;
+		free(tmp);
 	}
+}
+
+
+int main(){
+	long input;
+	scanf("%ld", &input);
+	node_t* tree = treeGen(input);
+	printTree(tree);
+	int i = 0;
+	for(;tree[i].next;i++);
+	for(;i>1;free(tree[i--].next));
 	free(tree);
-	/*for(int i = 1; i < 999999; i++){
-		printf("\n------------------------------------------------------\n%d\n------------------------------------------------------\n",i);
-		printTree(treeGen(i));
-	}*/ // iterate and print // all that is commented here is a different mode, this one is to generate many trees
-	/*clock_t begin = clock();
-	for(int i = 1; i < 99999999; i++)
-		treeGen(i);
-	clock_t end = clock();
-	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-	printf("Time took: %fs", time_spent);*/ // all that is commented here is a different mode, this one is to see the efficiency
 }
