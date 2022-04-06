@@ -109,10 +109,20 @@ void deleteList(node_t* head){
 	}
 }
 
+void insertNode(int index, int val, node_t* head){
+        node_t* prev = accessIndex(index-1,head);
+        node_t* next = accessIndex(index,head);
+        prev->next = makeNode(val);
+        prev->next->prev = prev;
+        prev->next->next = next;
+        next->prev = prev->next;
+}
+
 // To create a node, like to initialize a list, you can use makeNode
 // To append values to the list, select a node in the list and use appendNode
 // To get the pointer to an index of a list, select a node, the index and use accessIndex
-// To delete a node, provide it's pointer to deleteNode
+// To delete a node, provide it's pointer to deleteNode (this is like the pop function)
+// To "push" a node, provide it's index, value, and the head of the list to insertNode
 // To reverse a list, provide a pointer that is within the list to reverseList
 // To clear a list and free all it's pointers, provide a pointer that is within th list to deleteList
 
