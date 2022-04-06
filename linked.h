@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 typedef struct node {
-	struct node* prev;
+	struct node* prev; // The prev pointer is only here so you don't need to keep track of the head only, but can also use any element
 	int val;
 	struct node* next;
 } node_t;
