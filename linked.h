@@ -27,8 +27,16 @@ int listLen(node_t* head){
 	return len;
 }
 
+node_t* findHead(node_t* curr){
+	node_t* current = curr;
+	while(current->prev != NULL){
+	        current = current->prev;
+	}
+	return current;
+}
+
 node_t* accessIndex(int index, node_t* head){
-	node_t *curr = head;
+	node_t *curr = findHead(head);
 	for(int i = 0; i < index; i++){
 		curr=curr->next;
 		if (curr == NULL){
@@ -37,14 +45,6 @@ node_t* accessIndex(int index, node_t* head){
 	}
 	return curr;
 
-}
-
-node_t* findHead(node_t* curr){
-	node_t* current = curr;
-	while(current->prev != NULL){
-	        current = current->prev;
-	}
-	return current;
 }
 
 void appendNode(int value, node_t* head){
@@ -105,23 +105,15 @@ void reverseList(node_t* head){
 void deleteList(node_t* head){
 	int len = listLen(head);
 	for(int i = 0; i < len; i++){
-		deleteNode(accessIndex(listLen(head)-1,head));
+		deleteNode(accessIndex(listLen(head)-1,findHead(head)));
 	}
 }
 
-int main(){
-	node_t* head = makeNode(8);
-	appendNode(7,head);
-	appendNode(6,head);
-	printf("Made list of length: %d, Containing:\n",listLen(head));
-	printList(head);
-	deleteNode(accessIndex(listLen(head)-2,head));
-	printf("Deleted the second element\nList has now length: %d, Containing:\n",listLen(head));
-	printList(head);
-	reverseList(head);
-	printf("Reversed List\nList has length: %d, Containing:\n",listLen(head));
-	printList(head);
-	deleteList(head);
-	return 0;
-}
+// To create a node, like to initialize a list, you can use makeNode
+// To append values to the list, select a node in the list and use appendNode
+// To get the pointer to an index of a list, select a node, the index and use accessIndex
+// To delete a node, provide it's pointer to deleteNode
+// To reverse a list, provide a pointer that is within the list to reverseList
+// To clear a list and free all it's pointers, provide a pointer that is within th list to deleteList
+
 #endif
