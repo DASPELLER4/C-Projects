@@ -4,7 +4,6 @@
 #include <stdlib.h>
 
 typedef struct node {
-	struct node* prev; // The prev pointer is only here so you don't need to keep track of the head only, but can also use any element
 	int val;
 	struct node* next;
 } node_t;
@@ -12,7 +11,6 @@ typedef struct node {
 node_t* makeNode(int value){
 	node_t* ret = malloc(sizeof(node_t));
 	ret->val = value;
-	ret->prev = NULL;
 	ret->next = NULL;
 	return ret;
 }
@@ -27,16 +25,8 @@ int listLen(node_t* head){
 	return len;
 }
 
-node_t* findHead(node_t* curr){
-	node_t* current = curr;
-	while(current->prev != NULL){
-	        current = current->prev;
-	}
-	return current;
-}
-
 node_t* accessIndex(int index, node_t* head){
-	node_t *curr = findHead(head);
+	node_t *curr = head;
 	for(int i = 0; i < index; i++){
 		curr=curr->next;
 		if (curr == NULL){
@@ -50,19 +40,19 @@ node_t* accessIndex(int index, node_t* head){
 void appendNode(int value, node_t* head){
 	node_t* oldLast = accessIndex(listLen(head)-1,head);
 	oldLast->next = makeNode(value);
-	oldLast->next->prev = oldLast;
 }
 
-node_t* deleteNode(node_t* curr){ // return the head of the list
+node_t* deleteNode(int index, node_t* head){ // return the head of the list
+	node_t* prev = accessIndex(index-1, head);
+	node_t* curr = accessIndex(index, head);
 	node_t* ret = curr;
-	if(curr->prev != NULL){
+	if(index != 0){
 		if(curr->next != NULL){
-			curr->prev->next = curr->next;
-			curr->next->prev = curr->prev;
-			ret = findHead(curr);
+			prev->next = curr->next;
+			ret = head;
 		} else {
-			curr->prev->next = NULL;
-			ret = findHead(curr);
+			prev->next = NULL;
+			ret = head;
 		}
 		free(curr);
 	} else {
@@ -78,7 +68,6 @@ node_t* deleteNode(node_t* curr){ // return the head of the list
 }
 
 void printList(node_t* head){
-	head = findHead(head);
 	node_t* curr = head;
 	putchar('[');
 	while(curr != NULL){
@@ -92,38 +81,39 @@ void printList(node_t* head){
 	putchar('\n');
 }
 
-void reverseList(node_t* head){
-	head = findHead(head);
-	int index = 0;
-	for(index = 0; index<listLen(head)-1; index++){
-		int f = accessIndex(index,head)->val;
-		accessIndex(index,head)->val = accessIndex(listLen(head)-1-index,head)->val;
-		accessIndex(listLen(head)-1-index,head)->val = f;
+void reverseList(node_t** head){
+	node_t* curr = *head;
+	node_t* prev = NULL;
+	node_t* next = NULL;
+	while(curr){
+		next = curr->next;
+		curr->next = prev;
+		prev = curr;
+		curr = next;
 	}
+	*head = prev;
 }
 
 void deleteList(node_t* head){
 	int len = listLen(head);
-	for(int i = 0; i < len; i++){
-		deleteNode(accessIndex(listLen(head)-1,findHead(head)));
+	node_t* curr = head;
+	while(curr != NULL){
+		curr = deleteNode(0,curr);
 	}
 }
 
-void insertNode(int index, int val, node_t* head){
-        node_t* prev = accessIndex(index-1,head);
-        node_t* next = accessIndex(index,head);
-        prev->next = makeNode(val);
-        prev->next->prev = prev;
-        prev->next->next = next;
-        next->prev = prev->next;
+node_t* insertNode(int index, int val, node_t* head){ // incase the inserted node is now first
+	if (index == 0){
+		node_t* newHead = makeNode(val);
+		newHead->next = head;
+		return newHead;
+	} else {
+		node_t* prev = accessIndex(index-1,head);
+		node_t* next = accessIndex(index,head);
+		prev->next = makeNode(val);
+		prev->next->next = next;
+		return head;
+	}
 }
-
-// To create a node, like to initialize a list, you can use makeNode
-// To append values to the list, select a node in the list and use appendNode
-// To get the pointer to an index of a list, select a node, the index and use accessIndex
-// To delete a node, provide it's pointer to deleteNode (this is like the pop function)
-// To "push" a node, provide it's index, value, and the head of the list to insertNode
-// To reverse a list, provide a pointer that is within the list to reverseList
-// To clear a list and free all it's pointers, provide a pointer that is within th list to deleteList
 
 #endif
