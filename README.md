@@ -8,7 +8,8 @@ To first create a node to act as a head use
     node_t* head = makeNode(VAL);
 To append nodes to a list (head) use
 
-    appendNode(VAL, head);
+    appendNode(NODE, head); // when you have the node pointer
+    appendVal(VAL, head); // when you have the value
 To access an index of a list (head) use
 
     node_t* the_node_you_want = accessIndex(INDEX, head);
