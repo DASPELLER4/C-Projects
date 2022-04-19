@@ -37,9 +37,14 @@ node_t* accessIndex(int index, node_t* head){
 
 }
 
-void appendNode(int value, node_t* head){
+void appendVal(int value, node_t* head){
 	node_t* oldLast = accessIndex(listLen(head)-1,head);
 	oldLast->next = makeNode(value);
+}
+
+void appendNode(node_t* new, node_t* head){
+	node_t* oldLast = accessIndex(listLen(head)-1,head);
+	oldLast->next = new;
 }
 
 node_t* deleteNode(int index, node_t* head){ // return the head of the list
@@ -114,6 +119,18 @@ node_t* insertNode(int index, int val, node_t* head){ // incase the inserted nod
 		prev->next->next = next;
 		return head;
 	}
+}
+
+node_t* copyList(node_t* head){
+	node_t* newHead = makeNode(head->val);
+	node_t* prev = newHead;
+	node_t* curr = head->next;
+	while (curr){
+		prev->next = makeNode(curr->val);
+		prev = prev->next;
+		curr = curr->next;
+	}
+	return newHead;
 }
 
 #endif
