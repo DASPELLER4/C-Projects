@@ -33,7 +33,7 @@ void addBranchPtr(branch_t* val, char lor, branch_t* parent){ // lor: 0 = right,
     }
 }
 
-branch_t *accessBranch(char* accString, branch_t* root){ // accString: "01010" = right, left, right, left, right; Must be NULL terminated
+branch_t* accessBranch(char* accString, branch_t* root){ // accString: "01010" = right, left, right, left, right; Must be NULL terminated
     branch_t* curr = root;
     for (int i = 0; i<strlen(accString); i++){
         if(accString[i]-'0' == 0){ // right
