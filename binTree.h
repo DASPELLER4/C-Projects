@@ -25,6 +25,14 @@ void addBranchVal(int val, char lor, branch_t* parent){ // lor: 0 = right, lor: 
     }
 }
 
+void addBranchPtr(branch_t* val, char lor, branch_t* parent){ // lor: 0 = right, lor: 1 = left; parent = the branch where the new branch is being added
+    if(lor == 0){
+        parent->r = val;
+    } else {
+        parent->l = val;
+    }
+}
+
 branch_t *accessBranch(char* accString, branch_t* root){ // accString: "01010" = right, left, right, left, right; Must be NULL terminated
     branch_t* curr = root;
     for (int i = 0; i<strlen(accString); i++){
