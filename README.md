@@ -40,8 +40,5 @@ To create a list, from another list, seperate from that list use
     node_t* copy = copyList(head);
 
 # ISSUES
-<h3>prime factorisation</h3>
-IOT error, might fix later
- 
 <h3>Minesweeper</h3>
 Have to edit code to give new values
