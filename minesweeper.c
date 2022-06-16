@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h> // for atoi, ik it's super easy to make but why do i care?
 
 #define checkMines(a,b) (board->cells[b][a].bomb) ? currCell.surrounding++ : 0
 #define checkMinesAndReveal(a,b) (!board->cells[b][a].shown) ? revealFrom(board, a, b) : 0
@@ -57,14 +58,14 @@ board_t* genBoard(int size, int seed, int mines){
 int revealFrom(board_t* board, int x, int y){
 	currCell.shown = 1;
 	if(currCell.surrounding == 0){
-			checkMinesAndReveal(x-1,y-1);
-			checkMinesAndReveal(x,y-1);
-			checkMinesAndReveal(x+1,y-1);
-                        checkMinesAndReveal(x-1,y);
-                        checkMinesAndReveal(x+1,y);
-                        checkMinesAndReveal(x-1,y+1);
-                        checkMinesAndReveal(x,y+1);
-                        checkMinesAndReveal(x+1,y+1);
+		checkMinesAndReveal(x-1,y-1); // god i love macros
+		checkMinesAndReveal(x,y-1);
+		checkMinesAndReveal(x+1,y-1);
+		checkMinesAndReveal(x-1,y);
+		checkMinesAndReveal(x+1,y);
+		checkMinesAndReveal(x-1,y+1);
+		checkMinesAndReveal(x,y+1);
+		checkMinesAndReveal(x+1,y+1);
 		return 1;
 	}
 	return 0;
@@ -88,28 +89,42 @@ void printBoard(board_t board){
 		putchar('\n');
 	}
 	putchar('\t');
-	int i,chare;
+	int i,colChar;
 	i = 0;
-	for(chare = 'a'; i < board.square_width-2 && chare <= 'z'; i++){
-		putchar(chare++);
+	for(colChar = 'a'; i < board.square_width-2 && colChar <= 'z'; i++){
+		putchar(colChar++);
 		putchar(' ');
 	}
-	for(chare = 'A'; i < board.square_width-2 && chare <= 'Z'; i++){
-        	putchar(chare++);
+	for(colChar = 'A'; i < board.square_width-2 && colChar <= 'Z'; i++){
+        	putchar(colChar++);
 		putchar(' ');
 	}
-	for(chare = '0'; i < board.square_width-2 && chare <= '9'; i++){
-	        putchar(chare++);
+	for(colChar = '0'; i < board.square_width-2 && colChar <= '9'; i++){
+	        putchar(colChar++);
         	putchar(' ');
 	}
 	putchar('\n');
 	printf("Mines Left (unmarked) - %d\n", board.mineLeft);
 }
 
-int main(){
+int main(int argc, char **argv){
+	if(argc==2)
+		if(argv[1][0]=='-'&&argv[1][1]=='h'){
+			printf("Help page:\n\tControls:\n\t\tm <x> <y> - marks the cell\n\t\tr <x> <y> - reveals the cell\n\t\tq <x> <y> - Quit, wait, args?????? Yes, i am a moron\n\tArgs:\n\t\t-h - display this page\n\t\tif it's not -h, arg 1 is size and arg 2 is seed\n");
+			return 1;
+		}
+	if(argc<3){
+		printf("Arguments Expected: Size, Seed (int, int)\n");
+		printf("Help page:\n\tControls:\n\t\tm <x> <y> - marks the cell\n\t\tr <x> <y> - reveals the cell\n\t\tq <x> <y> - Quit, wait, args?????? Yes, i am a moron\n\tArgs:\n\t\t-h - display this page\n\t\tif it's not -h, arg 1 is size and arg 2 is seed\n");
+		return 1;
+	}
 	int startTime = (int)time(NULL);
-	int size = 21;
-	int seed = 44;
+	int size = atoi(argv[1]);
+	int seed = atoi(argv[2]);
+	if(size == 0 || seed == 0){
+		printf("Invalid Values Found, Both Args Have To Be Ints And > Than 1\n");
+		return 1;
+	}
 	int mines = (size*size)/6;
 	int quit = 0;
 	board_t *board = genBoard(size,seed,mines);
