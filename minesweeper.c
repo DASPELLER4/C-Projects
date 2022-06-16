@@ -145,11 +145,14 @@ int main(int argc, char **argv){
 		(selectionx >= 'a' && selectionx <= 'z') ? selectionx = selectionx - 'a' : 0;
 		(selectionx >= 'A' && selectionx <= 'Z') ? selectionx = selectionx - 'A' + 1 + ('z'-'a') : 0;
 		(selectionx >= '0' && selectionx <= '9') ? selectionx = selectionx - '0' + 2 + ('z'-'a') + ('Z'-'A'): 0;
+
 		if(option == 'm' || option == 'M'){
 			board->cells[selectiony][selectionx+1].marked = (board->cells[selectiony][selectionx+1].marked) ? 0 : 1;
 			board->mineLeft -= (board->cells[selectiony][selectionx+1].bomb) ? 1 : 0;
 		}else if(option == 'r' || option == 'R'){
-			if(!board->cells[selectiony][selectionx+1].bomb){
+			if(selectionx>=size||selectiony>=size)
+				printf("Out of bounds, %d %d\n", selectionx+1, selectiony);
+			else if(!board->cells[selectiony][selectionx+1].bomb){
 				revealFrom(board, selectionx+1, selectiony);
 				board->latestReveal[0] = selectionx+1;
 				board->latestReveal[1] = selectiony;
