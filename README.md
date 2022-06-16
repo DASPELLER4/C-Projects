@@ -38,3 +38,23 @@ To print a list use
 To create a list, from another list, seperate from that list use
 
     node_t* copy = copyList(head);
+
+<h3>Binary Tree Library</h3>
+To first create a branch to act as a root use
+
+    branch_t* head = makeBranch(VAL);
+To add branches to a parent branch use
+
+    // left or right: l = 1, r = 0
+    addBranchPtr(BRANCH, leftOrRight, parent); // when you have the branch pointer
+    addBranchVal(VAL, leftOrRight, parent); // when you have the value
+To access a branch of a tree use
+
+    // NAV is a string where every char navigates you down so "01" is right then left
+    branch_t* the_branch_you_want = accessBranch(NAV, root);
+To invert a tree use
+
+    invertTree(root);
+To free a tree use
+
+    freeTree(root);
