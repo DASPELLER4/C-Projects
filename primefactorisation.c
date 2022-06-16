@@ -6,11 +6,11 @@
 typedef struct tree_node{
 	int left;
 	int right;
-	struct tree_node* next;
+	int length;
 } node_t;
 
-int isPrime(long num){
-	for(long i = 2; i < num-1; i++){
+int isPrime(int num){
+	for(int i = 2; i < num-1; i++){
 		if (i != num){
 			if(num%i == 0)
 				return 0;
@@ -19,50 +19,59 @@ int isPrime(long num){
 	return 1;
 }
 
-node_t* primeGen(long num){
-	for(long i = 2; i < (num-1/2); i++){
+node_t primeGen(int num){
+	for(int i = 2; i < (num-1/2); i++){
 		if(isPrime(i)){
 			if(num%i == 0){
-				node_t* out = calloc(1,sizeof(node_t));
-				out->left = i;
-				out->right = num/i;
-				out->next = NULL;  
-				return out; // Where the earlier node is, the DEFINITIVE prime, the divisor, next node from right branch
+				return (node_t) {i,num/i}; // Where the earlier node is, the DEFINITIVE prime, the divisor, next node from right branch
 			}
 		}
 	}
 }
 
-node_t* treeGen(long num){
+int getStepCount(int num){
+	int steps = 0;
+	while(!isPrime(num))
+		for(int i = 2; i < (num-1/2); i++)
+	        	if(isPrime(i))
+        	        	if(num%i == 0){
+					num /= i;
+					steps++;
+				}
+	return steps;
+}
+
+node_t* treeGen(int num){
 	if(isPrime(num)){
 		node_t* out = calloc(1,sizeof(node_t));
-		out->left = num;
-		out->right= 1;
-		out->next = NULL; // is start and end of tree
+		out[0].left = num;
+		out[0].right= 1;
+		out[0].length = 0;
 		return out;
 	}
 	else{
-		node_t* tree = calloc(1,sizeof(node_t));
-		size_t treeSize = 1;
-		long lastRight = primeGen(num)->right;
-		tree[0].left = primeGen(num)->left;
-		tree[0].right = primeGen(num)->right;
-		tree[0].next = NULL;
+		int steps = getStepCount(num);
+		node_t* tree = calloc(steps,sizeof(node_t));
+		int last = 1;
+		node_t startGen = primeGen(num);
+		int lastRight = startGen.right;
+		tree[0].left = startGen.left;
+		tree[0].right = startGen.right;
+		tree[0].length = steps;
 		while(!isPrime(lastRight)){
-			tree = realloc(tree, (++treeSize*sizeof(node_t)));
-			tree[treeSize-1].left = primeGen(lastRight)->left;
-			tree[treeSize-1].right = primeGen(lastRight)->right;
-			tree[treeSize-1].next = NULL;
-			tree[treeSize-2].next = &tree[treeSize-1];
-			lastRight = tree[treeSize-1].right;
+			last++;
+			node_t currGen = primeGen(lastRight);
+			tree[last-1].left = currGen.left;
+			tree[last-1].right = currGen.right;
+			tree[last-1].length = steps;
+			lastRight = tree[last-1].right;
 		}
 		return tree;
 	}
 }
 
 void printTree(node_t* tree){
-	int treeLen = 0;
-	for(; tree[treeLen].next; treeLen++);
+	int treeLen = tree[0].length-1;
 	for(int j = 0; j<(((treeLen+1)/3+2));j++)
                 putchar(' ');
         printf("%d", tree[0].left*tree[0].right);
@@ -80,23 +89,10 @@ void printTree(node_t* tree){
 	}
 }
 
-void freeList(node_t* head){
-	node_t* tmp;
-	while (head != NULL){
-		tmp = head;
-		head = tmp->next;
-		free(tmp);
-	}
-}
-
-
 int main(){
-	long input;
-	scanf("%ld", &input);
+	int input;
+	scanf("%d", &input);
 	node_t* tree = treeGen(input);
 	printTree(tree);
-	int i = 0;
-	for(;tree[i].next;i++);
-	for(;i>1;free(tree[i--].next));
 	free(tree);
 }
