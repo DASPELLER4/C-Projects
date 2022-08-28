@@ -3,7 +3,7 @@ Small C projects
 
 # Docs
 <h3>2d Renderer</h3>
-Once you compile it, you run it with the argument being the filename of the shape, a shape is encoded as such
+Once you compile it, you run it with the argument being the filename of the shape and the next being a single character, a shape is encoded as such
 
 v<sub>1</sub> v<sub>2</sub> v<sub>3</sub> c<br>
 v<sub>1</sub> v<sub>2</sub> v<sub>3</sub> c<br>...
