@@ -2,6 +2,15 @@
 Small C projects
 
 # Docs
+<h3>2d Renderer</h3>
+Once you compile it, you run it with the argument being the filename of the shape, a shape is encoded as such
+
+v<sub>1</sub> v<sub>2</sub> v<sub>3</sub> c<br>
+v<sub>1</sub> v<sub>2</sub> v<sub>3</sub> c<br>...
+
+
+Where v is the vertecies of each 3 sided polygon and c is the color (an alphabetical or symbolic(!@#$%^&*...) character) which is what the shape will be rendered as
+
 <h3>Linked Library</h3>
 To first create a node to act as a head use
 
