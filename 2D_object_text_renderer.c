@@ -1,3 +1,6 @@
+// this code sucks, big time, I've reimplemented this in my dEngine project, of course without the eval function but that would be very simple to reimplement
+// this code was written quite some time before i published it so I was fairly(very) naive when it came to C
+
 /*
  * Simple 2D polygon (3 vertex) renderer in text for use in terminals
  * Uses files with syntax :
